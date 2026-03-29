@@ -6,19 +6,6 @@ require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/db.php';
 
 
-// ── TEMP DEBUG ──
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-echo "<pre>";
-echo "SALES COUNT: "    . db_value("SELECT COUNT(*) FROM sales") . "\n";
-echo "SALES SUM: "      . db_value("SELECT COALESCE(SUM(qty_sold * unit_price),0) FROM sales") . "\n";
-echo "EXPENSES COUNT: " . db_value("SELECT COUNT(*) FROM expenses") . "\n";
-echo "EXPENSES SUM: "   . db_value("SELECT COALESCE(SUM(amount),0) FROM expenses") . "\n";
-echo "DUES COUNT: "     . db_value("SELECT COUNT(*) FROM dues") . "\n";
-echo "DUES SUM: "       . db_value("SELECT COALESCE(SUM(total_amount),0) FROM dues") . "\n";
-echo "</pre>";
-die("--- DEBUG END ---");
-
 $pageTitle    = 'Dashboard';
 $pageSubtitle = 'Good to see you, ' . $adminName . '!';
 $today        = date('Y-m-d');

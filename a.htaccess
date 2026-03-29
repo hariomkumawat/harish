@@ -1,0 +1,88 @@
+# ============================================================
+#  .htaccess — Harishji Pav-Vada Admin Panel
+#  Place this in the project root: harishji-admin/
+# ============================================================
+
+# ── Engine ────────────────────────────────────────────────────
+Options -Indexes
+Options -MultiViews
+
+RewriteEngine On
+RewriteBase /harish/
+
+# ── Force HTTPS (uncomment on live server) ────────────────────
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# ── Block direct access to sensitive files ────────────────────
+<FilesMatch "(config\.php|db\.php|auth_check\.php|\.sql|\.env|\.log)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# ── Block access to entire folders ────────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteRule ^database/.*$  - [F,L]
+    RewriteRule ^logs/.*$      - [F,L]
+    RewriteRule ^includes/.*$  - [F,L]
+</IfModule>
+
+# ── Redirect root to dashboard (if logged in) ─────────────────
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^$  dashboard/index.php  [L]
+
+# ── Security headers ──────────────────────────────────────────
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options          "SAMEORIGIN"
+    Header always set X-Content-Type-Options   "nosniff"
+    Header always set X-XSS-Protection         "1; mode=block"
+    Header always set Referrer-Policy          "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy       "geolocation=(), microphone=(), camera=()"
+
+    # Remove PHP version fingerprint
+    Header unset X-Powered-By
+</IfModule>
+
+# ── PHP hardening ─────────────────────────────────────────────
+<IfModule mod_php.c>
+    php_flag  expose_php          Off
+    php_flag  display_errors      Off
+    php_value session.cookie_httponly  1
+    php_value session.cookie_samesite  Strict
+    php_value session.use_strict_mode  1
+</IfModule>
+
+# ── Block bad bots & scanners ─────────────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTP_USER_AGENT} (nikto|sqlmap|nmap|masscan|zgrab) [NC]
+    RewriteRule .* - [F,L]
+</IfModule>
+
+# ── Prevent image hotlinking ──────────────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTP_REFERER} !^$
+    RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?localhost [NC]
+    RewriteRule \.(jpg|jpeg|png|gif|svg)$ - [F,L]
+</IfModule>
+
+# ── Cache static assets ───────────────────────────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css             "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+    ExpiresByType image/png            "access plus 30 days"
+    ExpiresByType image/jpeg           "access plus 30 days"
+    ExpiresByType image/svg+xml        "access plus 30 days"
+    ExpiresByType image/x-icon         "access plus 30 days"
+</IfModule>
+
+# ── Compress output ───────────────────────────────────────────
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+# ── Disable ETags (avoid info leakage) ────────────────────────
+FileETag None

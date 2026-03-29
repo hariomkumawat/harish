@@ -7,14 +7,17 @@
 // ── Database ─────────────────────────────────────────────────
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'harishji_db');
-define('DB_USER', 'root');         // change to your MySQL user
-define('DB_PASS', '');             // change to your MySQL password
+// define('DB_USER', 'root');         
+// define('DB_PASS', '');  
+define('DB_USER', 'u480865533_harishji');         
+define('DB_PASS', 'Harishji@patidar#2@26');              
 define('DB_CHARSET', 'utf8mb4');
 
 // ── Application ───────────────────────────────────────────────
 define('APP_NAME',    'Harishji Pav-Vada');
 define('APP_VERSION', '1.0.0');
-define('BASE_URL',    'http://localhost/php/harish'); // no trailing slash
+define('BASE_URL',    'https://harishji.harvesthavengoods.com/'); // no trailing slash
+// define('BASE_URL',    'http://localhost/php/harish'); // no trailing slash
 
 // ── Session ───────────────────────────────────────────────────
 define('SESSION_NAME',    'harishji_session');

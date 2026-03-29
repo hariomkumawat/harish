@@ -27,7 +27,7 @@ CREATE TABLE admin_users (
 INSERT INTO admin_users (username, password, full_name)
 VALUES (
   'admin',
-  '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+  '$2y$10$J48S5UmjVlmbVwn.IUu5POlvcdXfuNjfiY6kV2AsFQCjld4FXaxLG',
   'Harishji'
 );
 

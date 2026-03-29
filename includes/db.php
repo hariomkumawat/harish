@@ -8,10 +8,9 @@ require_once __DIR__ . '/../config.php';
 
 try {
     $dsn = sprintf(
-        'mysql:host=%s;dbname=%s;charset=%s',
+        'mysql:host=%s;dbname=%s;charset=utf8mb4',
         DB_HOST,
-        DB_NAME,
-        DB_CHARSET
+        DB_NAME
     );
 
     $options = [
@@ -19,15 +18,14 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES   => false,
         PDO::MYSQL_ATTR_FOUND_ROWS   => true,
-        // MariaDB 11.x — only single SET statement works here
-        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_general_ci",
+        // unicode_ci — matches MariaDB 11.x default connection collation
+        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
     ];
 
     $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
 
-    // MariaDB 11.x fix — set collation separately after connect
-    $pdo->exec("SET collation_connection = utf8mb4_general_ci");
-    $pdo->exec("SET collation_server     = utf8mb4_general_ci");
+    // Force unicode_ci — matches @@collation_connection
+    $pdo->exec("SET collation_connection = utf8mb4_unicode_ci");
 
 } catch (PDOException $e) {
     if (DEBUG_MODE) {

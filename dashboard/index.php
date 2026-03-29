@@ -2,6 +2,9 @@
 // ============================================================
 //  dashboard/index.php — Home screen summary
 // ============================================================
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/db.php';
 
@@ -89,23 +92,7 @@ $recentExpenses = db_fetch_all(
 
 require_once __DIR__ . '/../includes/header.php';
 
-$todaySales    = 0.0;
-$todayExpenses = 0.0;
-$todayProfit   = 0.0;
-$monthSales    = 0.0;
-$monthExpenses = 0.0;
-$monthProfit   = 0.0;
-$pendingDues   = 0.0;
-$lowStockItems = [];
-$recentSales   = [];
-$recentExpenses = [];
 ?>
-<div class="stats-grid">
-  <div class="stat-card green">
-    <span class="stat-label">TEST VALUE</span>
-    <span class="stat-value">Rs.0.00</span>
-  </div>
-</div>
 
 <!-- ── Stat cards ────────────────────────────────────────────-->
 <div class="stats-grid">

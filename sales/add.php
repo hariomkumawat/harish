@@ -115,11 +115,11 @@ require_once __DIR__ . '/../includes/header.php';
           <option value="">— Select —</option>
           <?php foreach ($products as $prod): ?>
             <option value="<?= $prod['id'] ?>"
-                    data-price="<?= $prod['sale_price'] ?>"
+                    data-price="<?= number_format((float)$prod['sale_price'], 2, '.', '') ?>"
               <?= $old['product_id'] == $prod['id'] ? 'selected' : '' ?>>
               <?= htmlspecialchars($prod['name']) ?>
             </option>
-          <?php endforeach; ?>
+        <?php endforeach; ?>
         </select>
       </div>
 

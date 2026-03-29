@@ -18,7 +18,7 @@ define('DB_PASS', 'Harishji@patidar#2@26');
 // ── Application ───────────────────────────────────────────────
 define('APP_NAME',    'Harishji Pav-Vada');
 define('APP_VERSION', '1.0.0');
-define('BASE_URL',    'https://harishji.harvesthavengoods.com/'); // no trailing slash
+define('BASE_URL',    'https://harishji.harvesthavengoods.com'); // no trailing slash
 // define('BASE_URL',    'http://localhost/php/harish'); // no trailing slash
 
 // ── Session ───────────────────────────────────────────────────

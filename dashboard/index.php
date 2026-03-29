@@ -11,6 +11,21 @@ $pageSubtitle = 'Good to see you, ' . $adminName . '!';
 $today        = date('Y-m-d');
 $thisMonth    = date('Y-m');
 
+
+echo "<pre>";
+echo "FILE LOADED AT: " . __FILE__ . "\n";
+echo "TODAY: $today\n";
+echo "MONTH: $thisMonth\n";
+echo "RAW sales query: ";
+var_dump(db_value("SELECT COALESCE(SUM(qty_sold * unit_price),0) FROM sales WHERE sale_date = ?", [$today]));
+echo "RAW expenses query: ";
+var_dump(db_value("SELECT COALESCE(SUM(amount),0) FROM expenses WHERE expense_date = ?", [$today]));
+echo "RAW dues query: ";
+var_dump(db_value("SELECT COALESCE(SUM(total_amount - amount_paid),0) FROM dues WHERE is_cleared = 0"));
+echo "RAW month sales: ";
+var_dump(db_value("SELECT COALESCE(SUM(qty_sold * unit_price),0) FROM sales WHERE DATE_FORMAT(sale_date,'%Y-%m') = ?", [$thisMonth]));
+echo "</pre>";
+die("=== DEBUG DONE ===");
 // ── Today's total sales (avoid GENERATED column) ─────────────
 $raw = db_value(
     "SELECT COALESCE(SUM(qty_sold * unit_price), 0)

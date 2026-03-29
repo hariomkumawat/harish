@@ -33,7 +33,8 @@ $whereSQL = implode(' AND ', $where);
 
 $sales = db_fetch_all(
     "SELECT s.id, s.sale_date, s.qty_sold, s.unit_price,
-            s.total_amount, s.payment_mode, s.note,
+            (s.qty_sold * s.unit_price) AS total_amount,
+            s.payment_mode, s.note,
             p.name AS product, l.name AS location
        FROM sales s
        JOIN products  p ON p.id = s.product_id
@@ -43,8 +44,13 @@ $sales = db_fetch_all(
     $params
 );
 
-// Totals for filtered result
-$grandTotal = array_sum(array_column($sales, 'total_amount'));
+// ── Grand total — always from DB with same filters ────────────
+$grandTotal = (float) db_value(
+    "SELECT COALESCE(SUM(s.qty_sold * s.unit_price), 0)
+       FROM sales s
+      WHERE {$whereSQL}",
+    $params
+);
 
 $locations = db_fetch_all("SELECT id, name FROM locations ORDER BY id");
 $products  = db_fetch_all("SELECT id, name FROM products WHERE is_active = 1 ORDER BY name");

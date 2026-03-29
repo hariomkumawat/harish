@@ -10,16 +10,16 @@ $pageSubtitle = 'Good to see you, ' . $adminName . '!';
 $today        = date('Y-m-d');
 $thisMonth    = date('Y-m');
 // HARDCODED TEST - sab zero
-$todaySales    = 0.0;
-$todayExpenses = 0.0;
-$todayProfit   = 0.0;
-$monthSales    = 0.0;
-$monthExpenses = 0.0;
-$monthProfit   = 0.0;
-$pendingDues   = 0.0;
-$lowStockItems = [];
-$recentSales   = [];
-$recentExpenses = [];
+// $todaySales    = 0.0;
+// $todayExpenses = 0.0;
+// $todayProfit   = 0.0;
+// $monthSales    = 0.0;
+// $monthExpenses = 0.0;
+// $monthProfit   = 0.0;
+// $pendingDues   = 0.0;
+// $lowStockItems = [];
+// $recentSales   = [];
+// $recentExpenses = [];
 // ── Today's total sales (avoid GENERATED column) ─────────────
 $raw = db_value(
     "SELECT COALESCE(SUM(qty_sold * unit_price), 0)

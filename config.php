@@ -6,12 +6,14 @@
 
 // ── Database ─────────────────────────────────────────────────
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'harishji_db');
+// define('DB_NAME', 'harishji_db');
 // define('DB_USER', 'root');         
 // define('DB_PASS', '');  
+define('DB_CHARSET', 'utf8mb4');
+
+define('DB_NAME', 'u480865533_harishji_db');
 define('DB_USER', 'u480865533_harishji');         
 define('DB_PASS', 'Harishji@patidar#2@26');              
-define('DB_CHARSET', 'utf8mb4');
 
 // ── Application ───────────────────────────────────────────────
 define('APP_NAME',    'Harishji Pav-Vada');

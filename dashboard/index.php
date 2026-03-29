@@ -4,7 +4,12 @@
 // ============================================================
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/db.php';
-
+<?php
+// NO includes at all - pure test
+echo "<h1>TEST: " . rand(1000, 9999) . "</h1>";
+echo "<h2>TIME: " . date('H:i:s') . "</h2>";
+echo "<h2>VALUE: 0.00</h2>";
+die();
 $pageTitle    = 'Dashboard';
 $pageSubtitle = 'Good to see you, ' . $adminName . '!';
 $today        = date('Y-m-d');

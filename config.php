@@ -28,7 +28,7 @@ define('SESSION_TIMEOUT', 3600);
 // ── Business ──────────────────────────────────────────────────
 define('DEFAULT_LOCATION_ID', 1);
 define('LOW_STOCK_ALERT',     true);
-define('CURRENCY_SYMBOL',     '₹');
+define('CURRENCY_SYMBOL', 'Rs.');
 define('DATE_FORMAT',         'd/m/Y');
 define('DATE_FORMAT_DB',      'Y-m-d');
 

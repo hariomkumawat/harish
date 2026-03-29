@@ -2,7 +2,6 @@
 // ============================================================
 //  dashboard/index.php — Home screen summary
 // ============================================================
-
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/db.php';
 

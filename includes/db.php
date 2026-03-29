@@ -1,4 +1,9 @@
 <?php
+// ============================================================
+//  includes/db.php — PDO Database Connection
+//  Fixed for MariaDB 11.8.6
+// ============================================================
+
 require_once __DIR__ . '/../config.php';
 
 try {
@@ -14,15 +19,15 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES   => false,
         PDO::MYSQL_ATTR_FOUND_ROWS   => true,
-
-        // ── FIX: force collation on every connection ──────────
-        PDO::MYSQL_ATTR_INIT_COMMAND =>
-            "SET NAMES utf8mb4 COLLATE utf8mb4_general_ci,
-                 collation_connection = utf8mb4_general_ci,
-                 collation_database   = utf8mb4_general_ci",
+        // MariaDB 11.x — only single SET statement works here
+        PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_general_ci",
     ];
 
     $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+
+    // MariaDB 11.x fix — set collation separately after connect
+    $pdo->exec("SET collation_connection = utf8mb4_general_ci");
+    $pdo->exec("SET collation_server     = utf8mb4_general_ci");
 
 } catch (PDOException $e) {
     if (DEBUG_MODE) {
@@ -33,7 +38,9 @@ try {
     }
 }
 
-// ── Helper functions ──────────────────────────────────────────
+// ============================================================
+//  Helper functions
+// ============================================================
 
 function db_fetch_all(string $sql, array $params = []): array
 {

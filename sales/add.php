@@ -27,12 +27,10 @@ $old = [
 // ── Handle POST ───────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // CSRF check
     if (!hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token'] ?? '')) {
         $errors[] = 'Invalid request token. Please try again.';
     } else {
 
-        // Overwrite $old with submitted values
         $old = [
             'location_id'  => (int)   ($_POST['location_id']  ?? DEFAULT_LOCATION_ID),
             'product_id'   => (int)   ($_POST['product_id']   ?? 0),
@@ -43,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'note'         => trim(    $_POST['note']         ?? ''),
         ];
 
-        // Validation
         if (!$old['location_id'])     $errors[] = 'Please select a location.';
         if (!$old['product_id'])      $errors[] = 'Please select a product.';
         if (empty($old['sale_date'])) $errors[] = 'Sale date is required.';
@@ -72,6 +69,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+// ── Safe currency symbol for HTML + JS output ─────────────────
+$cur = 'Rs.';   // change to '&#8377;' if you want the rupee sign
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
@@ -119,12 +119,13 @@ require_once __DIR__ . '/../includes/header.php';
               <?= $old['product_id'] == $prod['id'] ? 'selected' : '' ?>>
               <?= htmlspecialchars($prod['name']) ?>
             </option>
-        <?php endforeach; ?>
+          <?php endforeach; ?>
         </select>
       </div>
 
       <div class="form-group">
-        <label for="unit_price">Unit Price (<?= CURRENCY_SYMBOL ?>) <span style="color:red">*</span></label>
+        <!-- ✅ FIX: use $cur instead of CURRENCY_SYMBOL in label -->
+        <label for="unit_price">Unit Price (<?= $cur ?>) <span style="color:red">*</span></label>
         <input type="number" id="unit_price" name="unit_price"
                value="<?= htmlspecialchars((string)$old['unit_price']) ?>"
                step="0.01" min="0.01" placeholder="0.00" required>
@@ -157,13 +158,13 @@ require_once __DIR__ . '/../includes/header.php';
         <label for="note">Note (optional)</label>
         <input type="text" id="note" name="note"
                value="<?= htmlspecialchars($old['note']) ?>"
-               placeholder="Any remark…">
+               placeholder="Any remark...">
       </div>
 
     </div>
 
     <div class="form-actions">
-      <button type="submit" class="btn btn-primary">💾 Save Sale</button>
+      <button type="submit" class="btn btn-primary">Save Sale</button>
       <a href="<?= BASE_URL ?>/sales/index.php" class="btn btn-outline">Cancel</a>
     </div>
 
@@ -171,6 +172,9 @@ require_once __DIR__ . '/../includes/header.php';
 </div>
 
 <script>
+// ✅ FIX: currency symbol passed safely from PHP to JS as a plain string
+const currencySymbol = <?= json_encode($cur) ?>;
+
 document.getElementById('product_id').addEventListener('change', function () {
   const price = this.options[this.selectedIndex]?.dataset?.price ?? '';
   if (price) document.getElementById('unit_price').value = parseFloat(price).toFixed(2);
@@ -182,7 +186,7 @@ function calcTotal() {
   const price = parseFloat(document.getElementById('unit_price').value) || 0;
   const total = qty * price;
   document.getElementById('total_display').value =
-    total > 0 ? '<?= CURRENCY_SYMBOL ?>' + total.toFixed(2) : '';
+    total > 0 ? currencySymbol + total.toFixed(2) : '';
 }
 
 document.getElementById('qty_sold').addEventListener('input',   calcTotal);

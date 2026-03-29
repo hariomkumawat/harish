@@ -5,53 +5,58 @@
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/db.php';
 
-
 $pageTitle    = 'Dashboard';
 $pageSubtitle = 'Good to see you, ' . $adminName . '!';
 $today        = date('Y-m-d');
 $thisMonth    = date('Y-m');
 
-// ── Today's total sales ───────────────────────────────────────
-$todaySales = (float) db_value(
-    "SELECT COALESCE(SUM(total_amount), 0)
+// ── Today's total sales (avoid GENERATED column) ─────────────
+$raw = db_value(
+    "SELECT COALESCE(SUM(qty_sold * unit_price), 0)
        FROM sales
       WHERE sale_date = ?",
     [$today]
 );
+$todaySales = $raw === false ? 0.0 : (float) $raw;
 
 // ── Today's total expenses ────────────────────────────────────
-$todayExpenses = (float) db_value(
+$raw = db_value(
     "SELECT COALESCE(SUM(amount), 0)
        FROM expenses
       WHERE expense_date = ?",
     [$today]
 );
+$todayExpenses = $raw === false ? 0.0 : (float) $raw;
 
 // ── Today's net profit ────────────────────────────────────────
 $todayProfit = $todaySales - $todayExpenses;
 
 // ── This month's totals ───────────────────────────────────────
-$monthSales = (float) db_value(
-    "SELECT COALESCE(SUM(total_amount), 0)
+$raw = db_value(
+    "SELECT COALESCE(SUM(qty_sold * unit_price), 0)
        FROM sales
       WHERE DATE_FORMAT(sale_date, '%Y-%m') = ?",
     [$thisMonth]
 );
+$monthSales = $raw === false ? 0.0 : (float) $raw;
 
-$monthExpenses = (float) db_value(
+$raw = db_value(
     "SELECT COALESCE(SUM(amount), 0)
        FROM expenses
       WHERE DATE_FORMAT(expense_date, '%Y-%m') = ?",
     [$thisMonth]
 );
+$monthExpenses = $raw === false ? 0.0 : (float) $raw;
 
 $monthProfit = $monthSales - $monthExpenses;
 
-// ── Total pending dues ────────────────────────────────────────
-$pendingDues = (float) db_value(
-    "SELECT COALESCE(SUM(amount_left), 0)
-       FROM vw_pending_dues"
+// ── Total pending dues (avoid GENERATED column) ───────────────
+$raw = db_value(
+    "SELECT COALESCE(SUM(total_amount - amount_paid), 0)
+       FROM dues
+      WHERE is_cleared = 0"
 );
+$pendingDues = $raw === false ? 0.0 : (float) $raw;
 
 // ── Low stock items ───────────────────────────────────────────
 $lowStockItems = db_fetch_all(
@@ -61,7 +66,9 @@ $lowStockItems = db_fetch_all(
 // ── Recent sales (last 7 rows) ────────────────────────────────
 $recentSales = db_fetch_all(
     "SELECT s.sale_date, p.name AS product, s.qty_sold,
-            s.unit_price, s.total_amount, l.name AS location
+            s.unit_price,
+            (s.qty_sold * s.unit_price) AS total_amount,
+            l.name AS location
        FROM sales s
        JOIN products  p ON p.id = s.product_id
        JOIN locations l ON l.id = s.location_id
@@ -216,11 +223,11 @@ require_once __DIR__ . '/../includes/header.php';
 <div class="card">
   <div class="card-title">Quick Actions</div>
   <div style="display:flex; flex-wrap:wrap; gap:.75rem;">
-    <a href="<?= BASE_URL ?>/sales/add.php"     class="btn btn-primary">➕ Add Sale</a>
-    <a href="<?= BASE_URL ?>/expenses/add.php"  class="btn btn-primary">➕ Add Expense</a>
-    <a href="<?= BASE_URL ?>/masala/add.php"    class="btn btn-primary">➕ Purchase Entry</a>
-    <a href="<?= BASE_URL ?>/inventory/add.php" class="btn btn-outline">📦 Update Stock</a>
-    <a href="<?= BASE_URL ?>/dues/add.php"      class="btn btn-outline">🔔 Add Due / EMI</a>
+    <a href="<?= BASE_URL ?>/sales/add.php"       class="btn btn-primary">➕ Add Sale</a>
+    <a href="<?= BASE_URL ?>/expenses/add.php"    class="btn btn-primary">➕ Add Expense</a>
+    <a href="<?= BASE_URL ?>/masala/add.php"      class="btn btn-primary">➕ Purchase Entry</a>
+    <a href="<?= BASE_URL ?>/inventory/add.php"   class="btn btn-outline">📦 Update Stock</a>
+    <a href="<?= BASE_URL ?>/dues/add.php"        class="btn btn-outline">🔔 Add Due / EMI</a>
     <a href="<?= BASE_URL ?>/reports/monthly.php" class="btn btn-outline">📊 Monthly Report</a>
   </div>
 </div>
